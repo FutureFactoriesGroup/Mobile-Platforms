@@ -18,7 +18,7 @@ void setup()
 void loop()
 {
   timer = millis();
-  motor.Forward();
+  motor.Forward(200);
   timeBetFrames = millis() - timer;
   delay((timeStep*100) - timeBetFrames); //Run at 100Hz
 }

@@ -33,22 +33,34 @@ void Motor::RunMotors(int Motor,int DGain,int Direction,int Gain)
   analogWrite(Direction,Gain);       // write gain to motors
 }
 
-void Motor::Forward()
+void Motor::Forward(int Tagret)
 {
-  RunMotors(M1,1,E1,200);
-  RunMotors(M2,0,E2,200);
-  RunMotors(M3,1,E3,200);
-  RunMotors(M4,0,E4,200);
+  RunMotors(M1,1,E1,Tagret);
+  RunMotors(M2,0,E2,Tagret);
+  RunMotors(M3,1,E3,Tagret);
+  RunMotors(M4,0,E4,Tagret);
 }
 
-void Motor::Backward()
+void Motor::Backward(int Tagret)
 {
+  RunMotors(M1,0,E1,Tagret);
+  RunMotors(M2,1,E2,Tagret);
+  RunMotors(M3,0,E3,Tagret);
+  RunMotors(M4,1,E4,Tagret);
 }
 
-void Motor::Left()
+void Motor::Left(int Tagret)
 {
+  RunMotors(M1,0,E1,Tagret);
+  RunMotors(M2,0,E2,Tagret);
+  RunMotors(M3,0,E3,Tagret);
+  RunMotors(M4,0,E4,Tagret);
 }
 
-void Motor::Right()
+void Motor::Right(int Tagret)
 {
+  RunMotors(M1,1,E1,Tagret);
+  RunMotors(M2,1,E2,Tagret);
+  RunMotors(M3,1,E3,Tagret);
+  RunMotors(M4,1,E4,Tagret);
 }

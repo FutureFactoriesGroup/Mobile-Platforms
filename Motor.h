@@ -22,10 +22,10 @@ class Motor
 
     void init_motors();           // initialise the motors
     void RunMotors(int Motor,int DGain,int Direction,int Gain);   // transmits commands to motors
-    void Forward();
-    void Backward();
-    void Left();
-    void Right();
+    void Forward(int Tagret);
+    void Backward(int Tagret);
+    void Left(int Tagret);
+    void Right(int Tagret);
 };
 
 #endif _MOTOR_
