@@ -7,7 +7,7 @@ float pid::error(float a, float b)
   return(c);
 }
 
-float pid::pid(float InputError,float SetPoint,unsigned long timeBetFrames,float Kp, float Ki, float Kd)
+float pid::PIDD(float InputError,float SetPoint,unsigned long timeBetFrames,float Kp, float Ki, float Kd)
 {
   InputErrorTotal += InputError;
   yT += y;

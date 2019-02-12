@@ -21,7 +21,7 @@ class pid                  // create motor control class
                               float PKp = 8,PKi = 0,PKd = 10;
                                    
     float error(float a, float b);  // error for feedback calculations
-    float pid(float InputError,float SetPoint,unsigned long timeBetFrames,float Kp, float Ki, float Kd);  // PID controller                                 
+    float PIDD(float InputError,float SetPoint,unsigned long timeBetFrames,float Kp, float Ki, float Kd);  // PID controller                                 
 };
 
 #endif _PID_

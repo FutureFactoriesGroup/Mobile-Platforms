@@ -1,31 +1,54 @@
 #include "Motor.h"
 
-#include <Servo.h>
-
-extern Servo Motor1,Motor2,Motor3,Motor4;
-
-void Initialise::init_motors()
+void Motor::init_motors()
 {
-  Motor1.attach(M1);
-  Motor2.attach(M2);
-  Motor3.attach(M3);
-  Motor4.attach(M4);                 // intialise the motors to pins
+   pinMode(M1,OUTPUT);
+   pinMode(M2,OUTPUT);  
+   pinMode(M3,OUTPUT);
+   pinMode(M4,OUTPUT);
+   
+   pinMode(E1,OUTPUT);
+   pinMode(E2,OUTPUT);  
+   pinMode(E3,OUTPUT);
+   pinMode(E4,OUTPUT);// intialise the motors to pins
 }
-void Motors::RunMotors(Servo* Motor,int Gain)
+
+void Motor::RunMotors(int Motor,int DGain,int Direction,int Gain)
 {
   int x = 0;
     
-   if(Gain > 2000)
+   if(Gain > 255)
    {
-        x = 2000;                      // Actuator Limit Saturation 
+        x = 255;                      // Actuator Limit Saturation 
    }
-   if(Gain < 1000)
+   if(Gain < 0)
    {
-        x = 1000;                      // Actuator Limit Saturation 
+        x = 0;                      // Actuator Limit Saturation 
    }
    else
    {
         x = Gain;              
    }
-   Motor->writeMicroseconds(x);       // write gain to motors
+  digitalWrite(Motor,DGain);
+  analogWrite(Direction,Gain);       // write gain to motors
+}
+
+void Motor::Forward()
+{
+  RunMotors(M1,1,E1,200);
+  RunMotors(M2,0,E2,200);
+  RunMotors(M3,1,E3,200);
+  RunMotors(M4,0,E4,200);
+}
+
+void Motor::Backward()
+{
+}
+
+void Motor::Left()
+{
+}
+
+void Motor::Right()
+{
 }

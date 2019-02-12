@@ -7,18 +7,25 @@
   #include "WProgram.h"
 #endif
 
-#include <Servo.h>
-
 class Motor
 {
   public:
-    int M1 = 3;     // Top Left
-    int M2 = 5;     // Bottom Left
-    int M3 = 6;     // Top Right
-    int M4 = 9;     // Bottom Right                 Motor Pin assignments
+    const int E1 = 3; //<Motor1 Speed
+    const int E2 = 11;//<Motor2 Speed
+    const int E3 = 5; //<Motor3 Speed
+    const int E4 = 6; //<Motor4 Speed
+
+    const int M1 = 4; //<Motor1 Direction
+    const int M2 = 12;//<Motor2 Direction
+    const int M3 = 8; //<Motor3 Direction
+    const int M4 = 7; //<Motor4 Direction
 
     void init_motors();           // initialise the motors
-    void RunMotors(Servo* Motor,int Gain);   // transmits commands to motors
-}
+    void RunMotors(int Motor,int DGain,int Direction,int Gain);   // transmits commands to motors
+    void Forward();
+    void Backward();
+    void Left();
+    void Right();
+};
 
 #endif _MOTOR_
