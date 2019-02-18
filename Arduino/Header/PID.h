@@ -7,7 +7,7 @@
   #include "WProgram.h"
 #endif
 
-class pid                  // create motor control class
+class pid                  // create PID class
 {
   public:
     float prevError  = 0;
