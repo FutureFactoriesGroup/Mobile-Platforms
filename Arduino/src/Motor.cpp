@@ -48,8 +48,23 @@ void Motor::Backward(int Tagret)
   RunMotors(M3,0,E3,Tagret);
   RunMotors(M4,1,E4,Tagret);
 }
-
 void Motor::Left(int Tagret)
+{
+  RunMotors(M1,0,E1,Tagret);
+  RunMotors(M2,0,E2,Tagret);
+  RunMotors(M3,1,E3,Tagret);
+  RunMotors(M4,1,E4,Tagret);
+}
+
+void Motor::Right(int Tagret)
+{
+  RunMotors(M1,1,E1,Tagret);
+  RunMotors(M2,1,E2,Tagret);
+  RunMotors(M3,0,E3,Tagret);
+  RunMotors(M4,0,E4,Tagret);
+}
+
+void Motor::rotateLeft(int Tagret)
 {
   RunMotors(M1,0,E1,Tagret);
   RunMotors(M2,0,E2,Tagret);
@@ -57,10 +72,18 @@ void Motor::Left(int Tagret)
   RunMotors(M4,0,E4,Tagret);
 }
 
-void Motor::Right(int Tagret)
+void Motor::rotateRight(int Tagret)
 {
   RunMotors(M1,1,E1,Tagret);
   RunMotors(M2,1,E2,Tagret);
   RunMotors(M3,1,E3,Tagret);
   RunMotors(M4,1,E4,Tagret);
 }
+void Motor::Stop()
+{
+  RunMotors(M1,1,E1,0);
+  RunMotors(M2,0,E2,0);
+  RunMotors(M3,1,E3,0);
+  RunMotors(M4,0,E4,0);
+}
+

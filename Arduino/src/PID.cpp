@@ -1,5 +1,11 @@
 #include "PID.h"
 
+int pid::velocity(int pos, long tim)
+{
+  Velocity = (pos - prevPos)/tim;
+  prevPos = pos;
+  return(Velocity*100);
+}
 float pid::error(float a, float b)
 {
   float c;
