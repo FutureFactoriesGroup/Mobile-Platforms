@@ -26,6 +26,9 @@ class Motor
     void Backward(int Tagret);
     void Left(int Tagret);
     void Right(int Tagret);
+    void rotateLeft(int Tagret);
+    void rotateRight(int Tagret);
+    void Stop();
 };
 
 #endif _MOTOR_

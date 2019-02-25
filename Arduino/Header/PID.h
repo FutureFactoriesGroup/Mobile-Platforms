@@ -16,10 +16,13 @@ class pid                  // create PID class
     float p=0,i=0,d=0,cont=0;
     float y = 0,yT = 0, N = 0.15;  
 
+    int Velocity = 0;
+    int prevPos = 0;
                               // PID variables and gains
                               float RKp = 8,RKi = 0,RKd = 10;
                               float PKp = 8,PKi = 0,PKd = 10;
-                                   
+                              
+    int velocity(int pos, long tim);                               
     float error(float a, float b);  // error for feedback calculations
     float PIDD(float InputError,float SetPoint,unsigned long timeBetFrames,float Kp, float Ki, float Kd);  // PID controller                                 
 };
