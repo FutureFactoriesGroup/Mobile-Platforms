@@ -3,8 +3,8 @@
 int pid::velocity(int pos, long tim)
 {
   Velocity = (pos - prevPos)/tim;
-  prevPos = pos;
-  return(Velocity*100);
+  prevPos = pos;              // calculate the rotational velocity from encoder counts
+  return(Velocity);
 }
 float pid::error(float a, float b)
 {
@@ -27,17 +27,17 @@ float pid::PIDD(float InputError,float SetPoint,unsigned long timeBetFrames,floa
   prevError = InputError;
   
   // integral anti-windup
-  if(cont > 200 )
+  if(cont > 30 )
   {
-    cont = 200;
+    cont = 30;
     if (InputError > 0)
     {
       InputErrorTotal = 0;
     }
   }
-  else if(cont < -200 )
+  else if(cont < -30 )
   {
-    cont = -200;
+    cont = -30;
     if (InputError < 0)
     {
       InputErrorTotal = 0;

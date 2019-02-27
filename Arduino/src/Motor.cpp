@@ -10,7 +10,7 @@ void Motor::init_motors()
    pinMode(E1,OUTPUT);
    pinMode(E2,OUTPUT);  
    pinMode(E3,OUTPUT);
-   pinMode(E4,OUTPUT);// intialise the motors to pins
+   pinMode(E4,OUTPUT); // intialise the motors to pins
 }
 
 void Motor::RunMotors(int Motor,int DGain,int Direction,int Gain)
