@@ -48,50 +48,48 @@ void setup()
 
 void loop()
 {
-  //while(1)
-  //{
   timer = millis();
+  
+  float error = 0, pid = 0;
+  int velocity1 = 0;velocity2 = 0;
+  int velocity3 = 0;velocity4 = 0;
   
   //xval = ros.readSerial();
   //yval = ros.readSerial()+1;
- /* Serial.print("|M1|");
+ /* 
+  Serial.print("|M1|");
   Serial.print(M1encoderPos, DEC);
   Serial.print("|M2|");
   Serial.print(M2encoderPos, DEC);
   Serial.print("|M3|");
   Serial.print(M3encoderPos, DEC);
   Serial.print("|M4|");
-  Serial.println(M4encoderPos, DEC);*/
-  int VVelocity = Pid.velocity(M3encoderPos,timeBetFrames);
-  Serial.print("|Vel|");
-  Serial.println(VVelocity);
+  Serial.println(M4encoderPos, DEC);
+  */
   
-  motor.Forward(255);/*
-  delay(2000);
-  motor.Stop();
-  delay(200);
-  motor.Left(200);
-  delay(2000);
-  motor.Stop();
-  delay(200);
-  motor.Right(200);
-  delay(2000);
-  motor.Stop();
-  delay(200);
-  motor.rotateLeft(200);
-  delay(2000);
-  motor.Stop();
-  delay(200);
-  motor.rotateRight(200);
-  delay(2000);
-  motor.Stop();
-  delay(200);
-  motor.Backward(200);
-  delay(2000);
-  motor.Stop();
-  delay(200);*/
+  velocity3 = Pid.velocity(M3encoderPos,timeBetFrames);
+  if (velocity3 < 0)
+  {
+    error = Pid.error(-35,velocity3);
+    pid = Pid.PIDD(error,-35, timeBetFrames, Pid.kp,Pid.ki,Pid.kd);
+
+  }
+  else if (velocity3 > 0)
+  {
+    error = Pid.error(35,velocity3);
+    pid = Pid.PIDD(error,35, timeBetFrames, Pid.kp,Pid.ki,Pid.kd);
+  }
+  motor.RunMotors(motor.M4,1, motor.E4,60+pid);
+  
+  Serial.print("|Vel|");
+  Serial.print(VVelocity);
+  Serial.print("\t|err|");
+  Serial.print(error);
+  Serial.print("\t|PID|");
+  Serial.println(pid);
+  
   timeBetFrames = millis() - timer;
-  delay(timeBetFrames); //Run at 100Hz
+  delay(50 - timeBetFrames); //Run at 100Hz
 }
     
 void doM1Encoder() 
