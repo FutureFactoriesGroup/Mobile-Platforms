@@ -19,8 +19,7 @@ class pid                  // create PID class
     int Velocity = 0;
     int prevPos = 0;
                               // PID variables and gains
-                              float RKp = 8,RKi = 0,RKd = 10;
-                              float PKp = 8,PKi = 0,PKd = 10;
+                              float kp = 0.5,ki = 0.01,kd = 0;
                               
     int velocity(int pos, long tim);                               
     float error(float a, float b);  // error for feedback calculations

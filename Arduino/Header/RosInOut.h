@@ -15,7 +15,7 @@ class RosInOut                  // create ROS Communication class
     int increment = 0;
 
   public:
-    int *readSerial();
+    int *readSerial();        //read in serial data and convert it to an integer
 };
 
 #endif  __ROSINOUT__
