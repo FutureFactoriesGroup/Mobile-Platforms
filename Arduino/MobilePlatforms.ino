@@ -25,6 +25,7 @@ pid Pid;
 RosInOut ros;
 
 int xval,yval;
+char id;
 
 void setup()
 {
@@ -51,11 +52,26 @@ void loop()
   timer = millis();
   
   float error = 0, pid = 0;
-  int velocity1 = 0;velocity2 = 0;
-  int velocity3 = 0;velocity4 = 0;
+  int velocity1 = 0,velocity2 = 0;
+  int velocity3 = 0,velocity4 = 0;
   
-  //xval = ros.readSerial();
-  //yval = ros.readSerial()+1;
+  id = ros.readID();
+  
+  if (id == 'A')
+  {
+     xval = ros.readX();
+     yval = ros.readY();
+     
+    Serial.print(xval);
+    Serial.print(" \t ");
+    Serial.println(yval);
+  }
+  else
+  {
+    motor.Stop();
+  }
+  
+ 
  /* 
   Serial.print("|M1|");
   Serial.print(M1encoderPos, DEC);
@@ -66,7 +82,7 @@ void loop()
   Serial.print("|M4|");
   Serial.println(M4encoderPos, DEC);
   */
-  
+  /*
   velocity3 = Pid.velocity(M3encoderPos,timeBetFrames);
   if (velocity3 < 0)
   {
@@ -87,7 +103,7 @@ void loop()
   Serial.print(error);
   Serial.print("\t|PID|");
   Serial.println(pid);
-  
+  */
   timeBetFrames = millis() - timer;
   delay(50 - timeBetFrames); //Run at 100Hz
 }
