@@ -11,11 +11,16 @@ class RosInOut                  // create ROS Communication class
 {
   private:
     char serialInput;
-    int char2int[9];
+    int char2int[15];
     int increment = 0;
+    int VectorX = 0;
+    int VectorY = 0;
 
   public:
-    int *readSerial();        //read in serial data and convert it to an integer
+    char ID;
+    char readID();       
+    int readX(); 
+    int readY(); //read in serial data and convert it to an integer
 };
 
 #endif  __ROSINOUT__
