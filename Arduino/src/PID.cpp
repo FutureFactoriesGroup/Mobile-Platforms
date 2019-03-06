@@ -6,6 +6,7 @@ int pid::velocity(int pos, long tim)
   prevPos = pos;              // calculate the rotational velocity from encoder counts
   return(Velocity);
 }
+
 float pid::error(float a, float b)
 {
   float c;
