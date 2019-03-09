@@ -1,7 +1,7 @@
 #include <EnableInterrupt.h>
-#include "PID.h"
 #include "Motor.h"
 #include "RosInOut.h"
+#include "PID.h"
 
 #define M1PinA  A8
 #define M1PinB  A9
@@ -21,8 +21,8 @@ int M3encoderPos = 0;
 int M4encoderPos = 0;
 
 Motor motor;
-pid Pid;
 RosInOut ros;
+pid Pid1;
 
 int xval,yval;
 char id;
@@ -51,10 +51,6 @@ void loop()
 {
   timer = millis();
   
-  float error = 0, pid = 0;
-  int velocity1 = 0,velocity2 = 0;
-  int velocity3 = 0,velocity4 = 0;
-  
   id = ros.readID();
   
   if (id == 'A')
@@ -68,11 +64,25 @@ void loop()
   }
   else
   {
-    motor.Stop();
+     Serial.print(M1encoderPos, DEC);
+     Serial.print(" \t ");
+     
+     int velocity1 = Pid1.velocity(M1encoderPos,timeBetFrames);
+     Serial.print(velocity1);
+     Serial.print(" \t ");
+     
+     int Tagret = 100;
+     float error1 = 0, pid1 = 0;
+     error1 = Pid1.error(Tagret,velocity1);
+     pid1 = Pid1.PIDD(error1,Tagret,timeBetFrames, Pid1.kp,Pid1.ki,Pid1.kd);
+     motor.RunMotors(motor.M1,1,motor.E1,(int)pid1);
+     Serial.println((int)pid1);
+     
+     //motor.Forward(100,timeBetFrames,M1encoderPos,M2encoderPos,M3encoderPos,M4encoderPos);
+     //motor.Stop();
   }
   
- 
- /* 
+  /*motor.RunMotors(motor.M4,1,motor.E4,100);
   Serial.print("|M1|");
   Serial.print(M1encoderPos, DEC);
   Serial.print("|M2|");
@@ -82,30 +92,9 @@ void loop()
   Serial.print("|M4|");
   Serial.println(M4encoderPos, DEC);
   */
-  /*
-  velocity3 = Pid.velocity(M3encoderPos,timeBetFrames);
-  if (velocity3 < 0)
-  {
-    error = Pid.error(-35,velocity3);
-    pid = Pid.PIDD(error,-35, timeBetFrames, Pid.kp,Pid.ki,Pid.kd);
-
-  }
-  else if (velocity3 > 0)
-  {
-    error = Pid.error(35,velocity3);
-    pid = Pid.PIDD(error,35, timeBetFrames, Pid.kp,Pid.ki,Pid.kd);
-  }
-  motor.RunMotors(motor.M4,1, motor.E4,60+pid);
   
-  Serial.print("|Vel|");
-  Serial.print(VVelocity);
-  Serial.print("\t|err|");
-  Serial.print(error);
-  Serial.print("\t|PID|");
-  Serial.println(pid);
-  */
   timeBetFrames = millis() - timer;
-  delay(50 - timeBetFrames); //Run at 100Hz
+  //delay(50 - timeBetFrames); //Run at 100Hz
 }
     
 void doM1Encoder() 
