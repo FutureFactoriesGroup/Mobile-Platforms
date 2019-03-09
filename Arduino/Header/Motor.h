@@ -10,25 +10,33 @@
 class Motor
 {
   public:
-    const int E1 = 3; //<Motor1 Speed
-    const int E2 = 11;//<Motor2 Speed
-    const int E3 = 5; //<Motor3 Speed
-    const int E4 = 6; //<Motor4 Speed
+    const int E1 = 11;  //<Motor1 Speed
+    const int E2 = 3;   //<Motor2 Speed
+    const int E3 = 6;   //<Motor3 Speed
+    const int E4 = 5;   //<Motor4 Speed
 
-    const int M1 = 4; //<Motor1 Direction
-    const int M2 = 12;//<Motor2 Direction
-    const int M3 = 8; //<Motor3 Direction
-    const int M4 = 7; //<Motor4 Direction
+    const int M1 = 12;  //<Motor1 Direction
+    const int M2 = 4;   //<Motor2 Direction
+    const int M3 = 7;   //<Motor3 Direction
+    const int M4 = 8;   //<Motor4 Direction
 
+    float error1 = 0, pid1 = 0;
+    float error2 = 0, pid2 = 0;
+    float error3 = 0, pid3 = 0;
+    float error4 = 0, pid4 = 0;
+    
+    int velocity1 = 0,velocity2 = 0;
+    int velocity3 = 0,velocity4 = 0;
+  
     void init_motors();           // initialise the motors
     void RunMotors(int Motor,int DGain,int Direction,int Gain);   // transmits commands to motors
     
-    void Forward(int Tagret);
-    void Backward(int Tagret);
-    void Left(int Tagret);       // movement
-    void Right(int Tagret);
-    void rotateLeft(int Tagret);
-    void rotateRight(int Tagret);
+    void Forward(int Tagret,long timeBetFrames,int enc1,int enc2,int enc3,int enc4);
+    void Backward(int Tagret,long timeBetFrames,int enc1,int enc2,int enc3,int enc4);
+    void Left(int Tagret,long timeBetFrames,int enc1,int enc2,int enc3,int enc4);       // movement
+    void Right(int Tagret,long timeBetFrames,int enc1,int enc2,int enc3,int enc4);
+    void rotateLeft(int Tagret,long timeBetFrames,int enc1,int enc2,int enc3,int enc4);
+    void rotateRight(int Tagret,long timeBetFrames,int enc1,int enc2,int enc3,int enc4);
     void Stop();
 };
 
