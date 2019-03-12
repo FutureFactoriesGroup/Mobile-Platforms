@@ -2,6 +2,7 @@
 #include "Motor.h"
 #include "RosInOut.h"
 #include "PID.h"
+#include <PID_v1.h>
 
 #define M1PinA  A8
 #define M1PinB  A9
@@ -22,7 +23,6 @@ int M4encoderPos = 0;
 
 Motor motor;
 RosInOut ros;
-pid Pid1;
 
 int xval,yval;
 char id;
@@ -64,37 +64,11 @@ void loop()
   }
   else
   {
-     Serial.print(M1encoderPos, DEC);
-     Serial.print(" \t ");
-     
-     int velocity1 = Pid1.velocity(M1encoderPos,timeBetFrames);
-     Serial.print(velocity1);
-     Serial.print(" \t ");
-     
-     int Tagret = 100;
-     float error1 = 0, pid1 = 0;
-     error1 = Pid1.error(Tagret,velocity1);
-     pid1 = Pid1.PIDD(error1,Tagret,timeBetFrames, Pid1.kp,Pid1.ki,Pid1.kd);
-     motor.RunMotors(motor.M1,1,motor.E1,(int)pid1);
-     Serial.println((int)pid1);
-     
-     //motor.Forward(100,timeBetFrames,M1encoderPos,M2encoderPos,M3encoderPos,M4encoderPos);
-     //motor.Stop();
+    motor.Forward(100,timeBetFrames,M1encoderPos,M2encoderPos,M3encoderPos,M4encoderPos);
   }
   
-  /*motor.RunMotors(motor.M4,1,motor.E4,100);
-  Serial.print("|M1|");
-  Serial.print(M1encoderPos, DEC);
-  Serial.print("|M2|");
-  Serial.print(M2encoderPos, DEC);
-  Serial.print("|M3|");
-  Serial.print(M3encoderPos, DEC);
-  Serial.print("|M4|");
-  Serial.println(M4encoderPos, DEC);
-  */
-  
   timeBetFrames = millis() - timer;
-  //delay(50 - timeBetFrames); //Run at 100Hz
+  delay(20 - timeBetFrames); //Run at 12Hz
 }
     
 void doM1Encoder() 
