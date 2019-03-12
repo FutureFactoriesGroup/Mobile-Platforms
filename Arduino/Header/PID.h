@@ -10,20 +10,14 @@
 class pid                  // create PID class
 {
   public:
-    float prevError  = 0;
-    float prevSetPoint = 0;
-    float InputErrorTotal = 0;
-    float p=0,i=0,d=0,cont=0;
-    float y = 0,yT = 0, N = 0.15;  
-
     int Velocity = 0;
     int prevPos = 0;
-                              // PID variables and gains
-                              float kp = 1,ki = 0.01,kd = 0;
-                              
-    int velocity(int pos, long tim);                               
-    float error(float a, float b);  // error for feedback calculations
-    float PIDD(float InputError,float SetPoint,unsigned long timeBetFrames,float Kp, float Ki, float Kd);  // PID controller                                 
+    float c;
+    double Input,Output,Setpoint;
+    double Kp = 0.8,Ki = 0.01,Kd = 0; // PID variables and gains
+    
+    int velocity(int pos, long tim);  // motor angular velocity                               
+    float error(float a, float b);    // error for feedback calculations
 };
 
 #endif _PID_
