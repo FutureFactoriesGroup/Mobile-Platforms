@@ -1,7 +1,12 @@
 #include "Motor.h"
 #include "PID.h"
+#include <PID_v1.h>
 
-pid Pid;
+pid Pid[4];
+PID PID1(&Pid[0].Input, &Pid[0].Output, &Pid[0].Setpoint,0.875,Pid[0].Ki,Pid[0].Kd, DIRECT);
+PID PID2(&Pid[1].Input, &Pid[1].Output, &Pid[1].Setpoint,Pid[1].Kp,Pid[1].Ki,Pid[1].Kd, DIRECT);
+PID PID3(&Pid[2].Input, &Pid[2].Output, &Pid[2].Setpoint,0.875,Pid[2].Ki,Pid[2].Kd, DIRECT);
+PID PID4(&Pid[3].Input, &Pid[3].Output, &Pid[3].Setpoint,Pid[3].Kp,Pid[3].Ki,Pid[3].Kd, DIRECT);
 
 void Motor::init_motors()
 {
@@ -14,6 +19,11 @@ void Motor::init_motors()
    pinMode(E2,OUTPUT);  
    pinMode(E3,OUTPUT);
    pinMode(E4,OUTPUT); // intialise the motors to pins
+
+   PID1.SetMode(AUTOMATIC);
+   PID2.SetMode(AUTOMATIC);
+   PID3.SetMode(AUTOMATIC);
+   PID4.SetMode(AUTOMATIC);
 }
 
 void Motor::RunMotors(int Motor,int DGain,int Direction,int Gain)
@@ -36,68 +46,67 @@ void Motor::RunMotors(int Motor,int DGain,int Direction,int Gain)
   analogWrite(Direction,Gain);       // write gain to motors
 }
 
-void Motor::Forward(int Tagret,long timeBetFrames,int enc1,int enc2,int enc3,int enc4)
+void Motor::Forward(int Target,long timeBetFrames,int enc1,int enc2,int enc3,int enc4)
 {
-  velocity1 = Pid.velocity(enc1,timeBetFrames);
-  error1 = Pid.error(Tagret,velocity1);
-  pid1 = Pid.PIDD(error1,Tagret, timeBetFrames, Pid.kp,Pid.ki,Pid.kd);
+  Pid[0].Setpoint = Target;
+  Pid[1].Setpoint = Target;
+  Pid[2].Setpoint = Target;
+  Pid[3].Setpoint = Target;
   
-  velocity2 = Pid.velocity(enc2,timeBetFrames);
-  error2 = Pid.error(Tagret,velocity2);
-  pid2 = Pid.PIDD(error2,Tagret, timeBetFrames, Pid.kp,Pid.ki,Pid.kd);
-
-  velocity3 = Pid.velocity(enc3,timeBetFrames);
-  error3 = Pid.error(Tagret,velocity3);
-  pid3 = Pid.PIDD(error3,Tagret, timeBetFrames, Pid.kp,Pid.ki,Pid.kd);
+  Pid[0].Input = Pid[0].velocity(enc1,timeBetFrames);
+  Pid[1].Input = Pid[1].velocity(enc2,timeBetFrames);
+  Pid[2].Input = Pid[2].velocity(enc3,timeBetFrames);
+  Pid[3].Input = Pid[3].velocity(enc4,timeBetFrames);
   
-  velocity4 = Pid.velocity(enc4,timeBetFrames);
-  error4 = Pid.error(Tagret,velocity4);
-  pid4 = Pid.PIDD(error4,Tagret, timeBetFrames, Pid.kp,Pid.ki,Pid.kd);
-
-  RunMotors(M1,1,E1,(int)pid1);
-  RunMotors(M2,0,E2,(int)pid2);
-  RunMotors(M3,1,E3,(int)pid3);
-  RunMotors(M4,0,E4,(int)pid4);
+  PID1.Compute();
+  PID2.Compute();
+  PID3.Compute();
+  PID4.Compute();
+  
+  RunMotors(M1,1,E1,Pid[0].Output);
+  RunMotors(M2,0,E2,Pid[1].Output);
+  RunMotors(M3,1,E3,Pid[2].Output);
+  RunMotors(M4,0,E4,Pid[3].Output);
 }
 
-void Motor::Backward(int Tagret,long timeBetFrames,int enc1,int enc2,int enc3,int enc4)
+void Motor::Backward(int Target,long timeBetFrames,int enc1,int enc2,int enc3,int enc4)
 {
-  RunMotors(M1,0,E1,Tagret);
-  RunMotors(M2,1,E2,Tagret);
-  RunMotors(M3,0,E3,Tagret);
-  RunMotors(M4,1,E4,Tagret);
+  RunMotors(M1,0,E1,Target);
+  RunMotors(M2,1,E2,Target);
+  RunMotors(M3,0,E3,Target);
+  RunMotors(M4,1,E4,Target);
 }
 
-void Motor::Left(int Tagret,long timeBetFrames,int enc1,int enc2,int enc3,int enc4)
+void Motor::Left(int Target,long timeBetFrames,int enc1,int enc2,int enc3,int enc4)
 {
-  RunMotors(M1,0,E1,Tagret);
-  RunMotors(M2,0,E2,Tagret);
-  RunMotors(M3,1,E3,Tagret);
-  RunMotors(M4,1,E4,Tagret);
+  RunMotors(M1,0,E1,Target);
+  RunMotors(M2,0,E2,Target);
+  RunMotors(M3,1,E3,Target);
+  RunMotors(M4,1,E4,Target);
 }
 
-void Motor::Right(int Tagret,long timeBetFrames,int enc1,int enc2,int enc3,int enc4)
+void Motor::Right(int Target,long timeBetFrames,int enc1,int enc2,int enc3,int enc4)
 {
-  RunMotors(M1,1,E1,Tagret);
-  RunMotors(M2,1,E2,Tagret);
-  RunMotors(M3,0,E3,Tagret);
-  RunMotors(M4,0,E4,Tagret);
+  RunMotors(M1,1,E1,Target);
+  RunMotors(M2,1,E2,Target);
+  RunMotors(M3,0,E3,Target);
+  RunMotors(M4,0,E4,Target);
 }
 
-void Motor::rotateLeft(int Tagret,long timeBetFrames,int enc1,int enc2,int enc3,int enc4)
+void Motor::rotateLeft(int Target,long timeBetFrames,int enc1,int enc2,int enc3,int enc4)
 {
-  RunMotors(M1,0,E1,Tagret);
-  RunMotors(M2,0,E2,Tagret);
-  RunMotors(M3,0,E3,Tagret);
-  RunMotors(M4,0,E4,Tagret);
+  RunMotors(M1,0,E1,Target);
+  RunMotors(M2,0,E2,Target);
+  RunMotors(M3,0,E3,Target);
+  RunMotors(M4,0,E4,Target);
 }
 
-void Motor::rotateRight(int Tagret,long timeBetFrames,int enc1,int enc2,int enc3,int enc4)
+void Motor::rotateRight(int Target,long timeBetFrames,int enc1,int enc2,int enc3,int enc4)
 {
-  RunMotors(M1,1,E1,Tagret);
-  RunMotors(M2,1,E2,Tagret);
-  RunMotors(M3,1,E3,Tagret);
-  RunMotors(M4,1,E4,Tagret);
+  RunMotors(M1,1,E1,Target);
+  RunMotors(M2,1,E2,Target);
+  RunMotors(M3,1,E3,Target);
+  RunMotors(M4,1,E4,Target);
 }
 
 void Motor::Stop()
