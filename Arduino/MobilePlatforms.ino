@@ -24,8 +24,11 @@ int M4encoderPos = 0;
 Motor motor;
 RosInOut ros;
 
-int xval,yval;
-char id;
+int xpos,ypos;
+int xtar,ytar;
+int xCmd,yCmd;
+
+char Posid,Tarid;
 
 void setup()
 {
@@ -51,20 +54,51 @@ void loop()
 {
   timer = millis();
   
-  id = ros.readID();
+  Posid = ros.readPosID();
+  Tarid = ros.readTarID();
   
-  if (id == 'A')
+  if (Posid == 'A')
   {
-     xval = ros.readX();
-     yval = ros.readY();
+     xpos = ros.readPosX();
+     ypos = ros.readPosY();
      
-    Serial.print(xval);
+    Serial.print(xpos);
     Serial.print(" \t ");
-    Serial.println(yval);
+    Serial.println(xpos);
   }
   else
   {
     motor.Forward(100,timeBetFrames,M1encoderPos,M2encoderPos,M3encoderPos,M4encoderPos);
+  }
+  
+  if (Tarid == 'A')
+  {
+     xtar = ros.readPosX();
+     ytar = ros.readPosY();
+     
+    Serial.print(xtar);
+    Serial.print(" \t ");
+    Serial.println(ytar);
+  }
+  
+  xCmd = xtar - xpos;
+  yCmd = ytar - ypos;
+
+  while(yCmd > 0)
+  {
+     motor.Forward(100,timeBetFrames,M1encoderPos,M2encoderPos,M3encoderPos,M4encoderPos);
+  }
+  while(yCmd < 0)
+  {
+     motor.Backward(100,timeBetFrames,M1encoderPos,M2encoderPos,M3encoderPos,M4encoderPos);
+  }
+  while(xCmd > 0)
+  {
+     motor.Right(100,timeBetFrames,M1encoderPos,M2encoderPos,M3encoderPos,M4encoderPos);
+  }
+  while(xCmd < 0)
+  {
+     motor.Left(100,timeBetFrames,M1encoderPos,M2encoderPos,M3encoderPos,M4encoderPos);
   }
   
   timeBetFrames = millis() - timer;
