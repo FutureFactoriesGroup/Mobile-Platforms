@@ -1,9 +1,12 @@
+//----------------------------------------HEADER FILES---------------------------------------------//
 #include <EnableInterrupt.h>
+#include <PID_v1.h>
+
 #include "Motor.h"
 #include "RosInOut.h"
 #include "PID.h"
-#include <PID_v1.h>
 
+//------------------------------------ENCODER PIN DEFINITIONS---------------------------------------//
 #define M1PinA  A8
 #define M1PinB  A9
 #define M2PinA  A10
@@ -21,15 +24,17 @@ int M2encoderPos = 0;
 int M3encoderPos = 0;
 int M4encoderPos = 0;
 
-Motor motor;
-RosInOut ros;
-
 int xpos,ypos;
 int xtar,ytar;
 int xCmd,yCmd;
 
 char Posid,Tarid;
 
+//----------------------------------------------CLASS INSTANTIATIONS---------------------------------//
+Motor motor;
+RosInOut ros;
+
+//---------------------------------------------SETUP FUCNTION----------------------------------------//
 void setup()
 {
   Serial.begin (9600);
@@ -50,6 +55,7 @@ void setup()
   enableInterrupt(M4PinA, doM4Encoder, CHANGE);
 }
 
+//---------------------------------------Main Control Loop-------------------------------------------//
 void loop()
 {
   timer = millis();
@@ -92,6 +98,7 @@ void loop()
   {
      motor.Backward(100,timeBetFrames,M1encoderPos,M2encoderPos,M3encoderPos,M4encoderPos);
   }
+  /*
   while(xCmd > 0)
   {
      motor.Right(100,timeBetFrames,M1encoderPos,M2encoderPos,M3encoderPos,M4encoderPos);
@@ -100,11 +107,12 @@ void loop()
   {
      motor.Left(100,timeBetFrames,M1encoderPos,M2encoderPos,M3encoderPos,M4encoderPos);
   }
-  
+  */
   timeBetFrames = millis() - timer;
   delay(20 - timeBetFrames); //Run at 12Hz
 }
-    
+
+//----------------------------------------------ENCODER SETUP----------------------------------------------//
 void doM1Encoder() 
 {
   // look for a low-to-high on channel A
