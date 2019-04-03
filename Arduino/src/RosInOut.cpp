@@ -1,6 +1,6 @@
 #include "RosInOut.h"
 
-char RosInOut::readPosID()
+char RosInOut::readID()
 {
   if(Serial.available())
   {
@@ -13,13 +13,15 @@ char RosInOut::readPosID()
         increment = 0;
         
         ID = (char)char2int[1]+48;
+        *char2int = 0;
      }
   }
   return(ID);
 }
 
-int RosInOut::readPosX()
+int *RosInOut::readPos()
 {
+  static int VectorXY[2];
   if(Serial.available())
   {
      serialInput = Serial.read();
@@ -30,16 +32,22 @@ int RosInOut::readPosX()
      {
         increment = 0;
         
-        VectorX = char2int[3]*100;
-        VectorX += char2int[4]*10;
-        VectorX += char2int[5]*1;
+        VectorXY[0] = char2int[3]*100;
+        VectorXY[0] += char2int[4]*10;
+        VectorXY[0] += char2int[5]*1;
+
+        VectorXY[1] = char2int[7]*100;
+        VectorXY[1] += char2int[8]*10;
+        VectorXY[1] += char2int[9]*1;
+        *char2int = 0;
      }
   }
-  return(VectorX);
+  return(VectorXY);
 }
 
-int RosInOut::readPosY()
+int *RosInOut::readTar()
 {
+  static int VectorXY[2];
   if(Serial.available())
   {
      serialInput = Serial.read();
@@ -50,16 +58,22 @@ int RosInOut::readPosY()
      {
         increment = 0;
         
-        VectorY = char2int[7]*100;
-        VectorY += char2int[8]*10;
-        VectorY += char2int[9]*1;
+        VectorXY[0] = char2int[11]*100;
+        VectorXY[0] += char2int[12]*10;
+        VectorXY[0] += char2int[13]*1;
+
+        VectorXY[1] = char2int[15]*100;
+        VectorXY[1] += char2int[16]*10;
+        VectorXY[1] += char2int[17]*1;
+        *char2int = 0;
      }
   }
-  return(VectorY);
+  return(VectorXY);
 }
 
-char RosInOut::readPosID()
+int *RosInOut::readAng()
 {
+  static int Angle[1];
   if(Serial.available())
   {
      serialInput = Serial.read();
@@ -70,48 +84,12 @@ char RosInOut::readPosID()
      {
         increment = 0;
         
-        ID = (char)char2int[11]+48;
+         Angle[0] = char2int[11]*100;
+         Angle[0] += char2int[12]*10;
+         Angle[0] += char2int[13]*1;
+        *char2int = 0;
      }
   }
-  return(ID);
+  return(Angle);
 }
 
-int RosInOut::readTarX()
-{
-  if(Serial.available())
-  {
-     serialInput = Serial.read();
-     char2int[increment] = (int)serialInput - 48;
-     increment++;
-        
-     if (serialInput == '>')
-     {
-        increment = 0;
-        
-        VectorX = char2int[13]*100;
-        VectorX += char2int[14]*10;
-        VectorX += char2int[15]*1;
-     }
-  }
-  return(VectorX);
-}
-
-int RosInOut::readTarY()
-{
-  if(Serial.available())
-  {
-     serialInput = Serial.read();
-     char2int[increment] = (int)serialInput - 48;
-     increment++;
-        
-     if (serialInput == '>')
-     {
-        increment = 0;
-        
-        VectorY = char2int[17]*100;
-        VectorY += char2int[18]*10;
-        VectorY += char2int[19]*1;
-     }
-  }
-  return(VectorY);
-}
