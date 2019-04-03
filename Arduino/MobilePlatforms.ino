@@ -24,11 +24,12 @@ int M2encoderPos = 0;
 int M3encoderPos = 0;
 int M4encoderPos = 0;
 
-int xpos,ypos;
-int xtar,ytar;
+int *xpos,*ypos;
+int *xtar,*ytar;
+int *ang;
 int xCmd,yCmd;
 
-char Posid,Tarid;
+char id = NULL;
 
 //----------------------------------------------CLASS INSTANTIATIONS---------------------------------//
 Motor motor;
@@ -60,36 +61,44 @@ void loop()
 {
   timer = millis();
   
-  Posid = ros.readPosID();
-  Tarid = ros.readTarID();
-  
-  if (Posid == 'A')
+  id = ros.readID();
+ 
+  if (id == 'A')
   {
-     xpos = ros.readPosX();
-     ypos = ros.readPosY();
+     xpos = ros.readPos();
+     ypos = ros.readPos()+1;
+
+     ang  = ros.readAng();
      
-    Serial.print(xpos);
-    Serial.print(" \t ");
-    Serial.println(xpos);
+     //xtar = ros.readTar();
+     //ytar = ros.readTar()+1;
+     
+     //xCmd = *xtar - *xpos;
+     //yCmd = *ytar - *ypos;
+  
+     motor.Forward(100,timeBetFrames,M1encoderPos,M2encoderPos,M3encoderPos,M4encoderPos);
+     
+     Serial.print(*xpos);
+     Serial.print(" \t ");
+     Serial.print(*ypos);
+     Serial.print(" \t ");
+     Serial.println(*ang);
+
+     while(yCmd > 0)
+     {
+        motor.Forward(100,timeBetFrames,M1encoderPos,M2encoderPos,M3encoderPos,M4encoderPos);
+     }
+     while(yCmd < 0)
+     {
+        motor.Backward(100,timeBetFrames,M1encoderPos,M2encoderPos,M3encoderPos,M4encoderPos);
+     }
   }
   else
   {
-    motor.Forward(100,timeBetFrames,M1encoderPos,M2encoderPos,M3encoderPos,M4encoderPos);
+    motor.Stop();
   }
-  
-  if (Tarid == 'A')
-  {
-     xtar = ros.readPosX();
-     ytar = ros.readPosY();
-     
-    Serial.print(xtar);
-    Serial.print(" \t ");
-    Serial.println(ytar);
-  }
-  
-  xCmd = xtar - xpos;
-  yCmd = ytar - ypos;
-
+  id = NULL;
+  /*
   while(yCmd > 0)
   {
      motor.Forward(100,timeBetFrames,M1encoderPos,M2encoderPos,M3encoderPos,M4encoderPos);
@@ -97,7 +106,7 @@ void loop()
   while(yCmd < 0)
   {
      motor.Backward(100,timeBetFrames,M1encoderPos,M2encoderPos,M3encoderPos,M4encoderPos);
-  }
+  }*/
   /*
   while(xCmd > 0)
   {
