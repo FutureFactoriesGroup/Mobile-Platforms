@@ -45,32 +45,6 @@ int *RosInOut::readPos()
   return(VectorXY);
 }
 
-int *RosInOut::readTar()
-{
-  static int VectorXY[2];
-  if(Serial.available())
-  {
-     serialInput = Serial.read();
-     char2int[increment] = (int)serialInput - 48;
-     increment++;
-        
-     if (serialInput == '>')
-     {
-        increment = 0;
-        
-        VectorXY[0] = char2int[11]*100;
-        VectorXY[0] += char2int[12]*10;
-        VectorXY[0] += char2int[13]*1;
-
-        VectorXY[1] = char2int[15]*100;
-        VectorXY[1] += char2int[16]*10;
-        VectorXY[1] += char2int[17]*1;
-        *char2int = 0;
-     }
-  }
-  return(VectorXY);
-}
-
 int *RosInOut::readAng()
 {
   static int Angle[1];
@@ -93,3 +67,33 @@ int *RosInOut::readAng()
   return(Angle);
 }
 
+void RosInOut::readTar()
+{
+  if(Serial.available())
+  {
+     serialInput = Serial.read();
+     char2int[increment] = (int)serialInput - 48;
+     increment++;
+
+     if (serialInput == '>')
+     {
+        increment = 0;
+        int dim = char2int[3]*100;
+        dim += char2int[4]*10;
+        dim += char2int[5]*1;
+        
+        for(int x = 0; x< ((dim+1)/4); x++)
+        {
+          Path[x] = char2int[7+4*x]*100;
+          Path[x] += char2int[8+4*x]*10;
+          Path[x] += char2int[9+4*x]*1;
+
+          Path[x+1] = char2int[11+4*x]*100;
+          Path[x+1] += char2int[12+4*x]*10;
+          Path[x+1] += char2int[13+4*x]*1;
+          numPoints++;
+        }
+        *char2int = 0;
+     }
+  }
+}
