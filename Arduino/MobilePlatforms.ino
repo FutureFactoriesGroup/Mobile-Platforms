@@ -114,11 +114,11 @@ void loop()
          }
          if (aCmd>0)
          {
-            motor.rotateLeft(yCmd,timeBetFrames,M1encoderPos,M2encoderPos,M3encoderPos,M4encoderPos);
+            motor.rotateLeft(aCmd,timeBetFrames,M1encoderPos,M2encoderPos,M3encoderPos,M4encoderPos);
          }
          else if(aCmd<0)
          {
-            motor.rotateRight(yCmd,timeBetFrames,M1encoderPos,M2encoderPos,M3encoderPos,M4encoderPos);
+            motor.rotateRight(aCmd,timeBetFrames,M1encoderPos,M2encoderPos,M3encoderPos,M4encoderPos);
          }
               
              /* Serial.print(*xpos);
