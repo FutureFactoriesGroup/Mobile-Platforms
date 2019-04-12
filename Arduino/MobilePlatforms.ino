@@ -65,66 +65,61 @@ void loop()
 {
   timer = millis();
   
-  id = ros.readID();
- 
-  if (id == 'P')
+  runn = 1;
+  while(runn != 0)
   {
-    runn = 1;
-    while(runn != 0)
-    {
-       ros.readTar();
-       int X[ros.numPoints],Y[ros.numPoints];
-       for(int x = 0;x<((ros.numPoints+1)/0.5);x++)
-       {
-         X[x] = ros.Path[2*x];
-       }
-       for(int x = 0;x<ros.numPoints-1;x++)
-       {
-         Y[x] = ros.Path[x+1];
-         Serial.println(Y[x]);
-       }
+     ros.readTar();
+     int pathlenght = ros.Path[0];
+     int X[pathlenght],Y[pathlenght];
+     for(int x = 1;x<ros.numPoints-1;x++)
+     {
+        X[x] = ros.Path[x+1];
+        Serial.println(X[x]);
+     }
+     for(int x = 1;x<(ros.numPoints)/2;x++)
+     {
+       Y[x] = ros.Path[2*x];
+     }
        
-       while(i<ros.numPoints)
-       {
-          id = ros.readID();
-   
-           if (id == 'A')
-           {
-              xpos = ros.readPos();
-              ypos = ros.readPos()+1;
-              ang  = ros.readAng();
+     while(i<ros.numPoints)
+     {
+        ros.readPos();
+
+        *xpos = ros.Position[0];
+        *ypos = ros.Position[1];
+        *ang = ros.Position[2];
+           
+        *xtar = X[i];
+        *ytar = Y[i];
               
-              *xtar = X[i];
-              *ytar = Y[i];
-              
-              PIDx.Compute();
-              PIDy.Compute();
-              PIDa.Compute();
+         PIDx.Compute();
+         PIDy.Compute();
+         PIDa.Compute();
   
-              if (xCmd>0)
-              {
-                motor.Forward(xCmd,timeBetFrames,M1encoderPos,M2encoderPos,M3encoderPos,M4encoderPos);
-              }
-              else if(xCmd<0)
-              {
-                motor.Backward(xCmd,timeBetFrames,M1encoderPos,M2encoderPos,M3encoderPos,M4encoderPos);
-              }
-              if (yCmd>0)
-              {
-                motor.Left(yCmd,timeBetFrames,M1encoderPos,M2encoderPos,M3encoderPos,M4encoderPos);
-              }
-              else if(yCmd<0)
-              {
-                motor.Right(yCmd,timeBetFrames,M1encoderPos,M2encoderPos,M3encoderPos,M4encoderPos);
-              }
-              if (aCmd>0)
-              {
-                motor.rotateLeft(yCmd,timeBetFrames,M1encoderPos,M2encoderPos,M3encoderPos,M4encoderPos);
-              }
-              else if(aCmd<0)
-              {
-                motor.rotateRight(yCmd,timeBetFrames,M1encoderPos,M2encoderPos,M3encoderPos,M4encoderPos);
-              }
+         if (xCmd>0)
+         {
+           motor.Forward(xCmd,timeBetFrames,M1encoderPos,M2encoderPos,M3encoderPos,M4encoderPos);
+         }
+         else if(xCmd<0)
+         {
+            motor.Backward(xCmd,timeBetFrames,M1encoderPos,M2encoderPos,M3encoderPos,M4encoderPos);
+         }
+         if (yCmd>0)
+         {
+            motor.Left(yCmd,timeBetFrames,M1encoderPos,M2encoderPos,M3encoderPos,M4encoderPos);
+         }
+         else if(yCmd<0)
+         {
+            motor.Right(yCmd,timeBetFrames,M1encoderPos,M2encoderPos,M3encoderPos,M4encoderPos);
+         }
+         if (aCmd>0)
+         {
+            motor.rotateLeft(yCmd,timeBetFrames,M1encoderPos,M2encoderPos,M3encoderPos,M4encoderPos);
+         }
+         else if(aCmd<0)
+         {
+            motor.rotateRight(yCmd,timeBetFrames,M1encoderPos,M2encoderPos,M3encoderPos,M4encoderPos);
+         }
               
              /* Serial.print(*xpos);
               Serial.print(" \t ");
@@ -141,21 +136,14 @@ void loop()
               Serial.print(yCmd);
               Serial.print(" \t ");
               Serial.println(yCmd);*/
-          }
           if(xCmd == 0 && yCmd == 0 && aCmd == 0)
           {
                 i++;
           }
        }
        runn = 0;
-    }
   }
-  else
-  {
-    id = NULL;
-    motor.Stop();
-  }
-  id = NULL;
+  motor.Stop();
   timeBetFrames = millis() - timer;
   delay(20 - timeBetFrames); //Run at 12Hz
 }
