@@ -24,10 +24,10 @@ int M2encoderPos = 0;
 int M3encoderPos = 0;
 int M4encoderPos = 0;
 
-int i;
+int i = 0;
 int *xpos,*ypos;
 int *xtar,*ytar;
-int *ang;
+int *ang,*angtar;
 int xCmd,yCmd,aCmd;
 bool runn = 0;
 char id = NULL;
@@ -38,7 +38,7 @@ RosInOut ros;
 pid Pidxya;
 PID PIDx((double*)xpos, (double*)xCmd, (double*)xtar,10,2,0, DIRECT);
 PID PIDy((double*)ypos, (double*)yCmd, (double*)ytar,10,2,0, DIRECT);
-PID PIDa((double*)ang, (double*)aCmd, 0,10,2,0, DIRECT);
+PID PIDa((double*)ang, (double*)aCmd, (double*)angtar,10,2,0, DIRECT);
 //---------------------------------------------SETUP FUCNTION----------------------------------------//
 void setup()
 {
@@ -69,6 +69,7 @@ void loop()
   while(runn != 0)
   {
      ros.readTar();
+     
      int pathlenght = ros.Path[0];
      int X[pathlenght],Y[pathlenght];
      for(int x = 1;x<ros.numPoints-1;x++)
@@ -88,10 +89,17 @@ void loop()
         *xpos = ros.Position[0];
         *ypos = ros.Position[1];
         *ang = ros.Position[2];
-           
+
+        *ang = *ang/100;
+         
         *xtar = X[i];
         *ytar = Y[i];
-              
+
+         int x = *xtar - *xpos;
+         int y = *ytar - *ypos;
+         
+        *angtar = tan(x/y);
+        
          PIDx.Compute();
          PIDy.Compute();
          PIDa.Compute();
@@ -141,6 +149,7 @@ void loop()
                 i++;
           }
        }
+       i = 0;
        runn = 0;
   }
   motor.Stop();
