@@ -27,7 +27,7 @@ int M4encoderPos = 0;
 int i = 0;
 int *xpos,*ypos;
 int *xtar,*ytar;
-int *ang,*angtar;
+int *angpos,*angtar;
 int xCmd,yCmd,aCmd;
 bool runn = 0;
 char id = NULL;
@@ -38,7 +38,7 @@ RosInOut ros;
 pid Pidxya;
 PID PIDx((double*)xpos, (double*)xCmd, (double*)xtar,10,2,0, DIRECT);
 PID PIDy((double*)ypos, (double*)yCmd, (double*)ytar,10,2,0, DIRECT);
-PID PIDa((double*)ang, (double*)aCmd, (double*)angtar,10,2,0, DIRECT);
+PID PIDa((double*)angpos, (double*)aCmd, (double*)angtar,10,2,0, DIRECT);
 //---------------------------------------------SETUP FUCNTION----------------------------------------//
 void setup()
 {
@@ -88,9 +88,9 @@ void loop()
 
         *xpos = ros.Position[0];
         *ypos = ros.Position[1];
-        *ang = ros.Position[2];
+        *angpos = ros.Position[2];
 
-        *ang = *ang/100;
+        *angpos = *angpos/100;
          
         *xtar = X[i];
         *ytar = Y[i];
