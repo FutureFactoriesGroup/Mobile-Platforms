@@ -11,7 +11,6 @@ char RosInOut::readID()
      if (serialInput == '>')
      {
         increment = 0;
-        
         ID = (char)char2int[1]+48;
         *char2int = 0;
      }
@@ -31,7 +30,7 @@ void RosInOut::readPos()
         Position[numPoints] = char2int[numPoints];
         numPoints++;
      
-        if (serialInput == '\n') 
+        if (serialInput == '>') 
         {
            *char2int = 0;
            *Position = {0};
@@ -54,7 +53,7 @@ void RosInOut::readTar()
         Path[numPoints] = char2int[numPoints];
         numPoints++;
      
-        if (serialInput == '\n') 
+        if (serialInput == '>') 
         {
           *char2int = 0;
           *Path = {0};
