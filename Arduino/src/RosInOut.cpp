@@ -20,9 +20,6 @@ char RosInOut::readID()
 
 void RosInOut::readPos()
 {
-  char id = readID();
-  if(id == 'A')
-  {
      while(Serial.available() > 0)
      { 
         serialInput = Serial.read();
@@ -30,7 +27,7 @@ void RosInOut::readPos()
         Position[numPoints] = char2int[numPoints];
         numPoints++;
      
-        if (serialInput == '>') 
+        if (serialInput == '\n') 
         {
            *char2int = 0;
            *Position = {0};
@@ -38,14 +35,10 @@ void RosInOut::readPos()
            break;
         }
       }
-   }
 }
 
 void RosInOut::readTar()
 {
-  char id = readID();
-  if(id == 'P')
-  {
      while(Serial.available() > 0)
      { 
         serialInput = Serial.read();
@@ -53,7 +46,7 @@ void RosInOut::readTar()
         Path[numPoints] = char2int[numPoints];
         numPoints++;
      
-        if (serialInput == '>') 
+        if (serialInput == '\n') 
         {
           *char2int = 0;
           *Path = {0};
@@ -61,5 +54,4 @@ void RosInOut::readTar()
           break;
         }
       }
-  }
 }
