@@ -1,27 +1,30 @@
 #include "RosInOut.h"
 
-char RosInOut::readID()
+int *RosInOut::readID()
 {
+  Serial.flush();
   if(Serial.available())
   {
      serialInput = Serial.read();
-     char2int[increment] = (int)serialInput - 48;
+     char2int[increment] = Serial.parseInt();
      increment++;
         
-     if (serialInput == '>')
+     if (serialInput == ')')
      {
-        increment = 0;
-        ID = (char)char2int[1]+48;
-        *char2int = 0;
+        Position[0] = char2int[0];
+        Position[1] = char2int[1];
+        Position[2] = char2int[2];
+        //*char2int = 0;
+        increment = 0; 
      }
   }
-  return(ID);
+  return(Position);
 }
 
 void RosInOut::readPos()
 {
      while(Serial.available() > 0)
-     { 
+     {  
         serialInput = Serial.read();
         char2int[numPoints] =  Serial.parseInt();
         Position[numPoints] = char2int[numPoints];
