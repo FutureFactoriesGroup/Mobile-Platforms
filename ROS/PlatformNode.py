@@ -5,83 +5,102 @@ import time
 import sys
 import serial
 from std_msgs.msg import String
+import math
+import numpy as np
 
+x = []
+y = []
+PtIndex = 0
+pub = None
 #arduino = serial.Serial('/dev/ttyACM0', 9600,timeout = 1)
-arduino = serial.Serial('/dev/ttyUSB0', 9600,timeout = 1)
+#arduino = serial.Serial('/dev/ttyUSB0', 9600,timeout = 1)
 time.sleep(2)
+inputString = ""
+#do:
+	#inputString = arduino.readline()
+#while(inputString=="")
 
 #pub = rospy.Publisher('/PlatformError', String, queue_size=10)
 #rospy.init_node('TransportNode', anonymous=True)
 
-i = 0
+#pub.publish("From Arduino: {}".format(inputString))
+
 PathSent = False
-Talksig = " "
 def callback(data):
 	#rospy.loginfo(rospy.get_caller_id() + "I heard %s", data.data)
 	global PathSent
-	global Talksig
-        message = str(data.data)
+	global pub
+	global x
+	global y
+	global PtIndex
+	message = str(data.data)
+	#pub.publish(data.data)
+	if message[4:7] == "022" and PathSent == True:
+		#pub.publish("022")
+		info = message.split("(")
+		message = info[1]
+		message = (message[:-65]).split(",")
+		PosX = int(message[1])
+		PosY = int(message[2])
+		alpha = int(message[3])
+		# create complex next position
+		nextPos = x[PtIndex]+y[PtIndex]*1j
+		pub.publish("next pos:" + str(nextPos))
+		# create complex current position
+		currentPos = PosX+PosY*1j
+		pub.publish("currentPos:" + str(currentPos))
+		# create error vector --> this gives Xerr and Yerr
+		currentPosError = nextPos-currentPos
+		pub.publish("currentPosError:" + str(currentPosError))
+		Xerr,Yerr = currentPosError.real,currentPosError.imag
 
-        if message[4:7] == "022" and PathSent == True:
-                info = message.split("(")
-                message = info[1]
-                message = (message[:-65]).split(",")
-                NID = message[0]
-                X  = message[1]
-                Y  = message[2]
-                a  = message[3]
-
-                pos = ['<'+ NID,X,Y,a +'>']
-                postring = ",".join(pos)
-                print(postring)
-                arduino.write(postring)
-		Talksig = postring
-		rospy.loginfo(Talksig)
-		talker(Talksig)
-
-        elif message[4:7] == "019":
-                PathSent = True
-                NID = 'P'
-                Length = message[11:14]
-                info = message.split("(")
-                message = info[1]
-                message = message[:-65].split(",")
-                x = message[0]
-                xy = ' '
-                
-                for i in range(1,(int(x)*2)+1):
-                        xy += message[i]
-
-                path = ['<'+ NID,Length,xy+'>']
-                pathstring = ",".join(path)
-                print(pathstring)
-		arduino.write(pathstring)
-		Talksig = pathstring
-		rospy.loginfo(Talksig)
-		talker(Talksig)
-def talker(data):
-	#rospy.init_node('TransportNode', anonymous=True)
-        pub = rospy.Publisher('/PlatformError', String, queue_size=10)
-	rate = rospy.Rate(10)
-	#while not rospy.is_shutdown():
-	pub.publish(data)
-        rate.sleep()
+		# take arg of error vector and subtract alpha
+		desiredAlpha = np.angle(currentPosError)
+		#remap desiredAlpha
+		if(desiredAlpha<0):
+			desiredAlpha =   abs(desiredAlpha) - (math.pi)*100.0
+		alphaError = (desiredAlpha)-alpha + (2*math.pi)*100.0
+		pub.publish("DesiredAlpha: " + str(desiredAlpha))
 
 
-def listener():
-	global Talksig
-	rospy.init_node('TransportNode', anonymous=True)
-	pub = rospy.Subscriber('/Transport', String, callback)
-	#talker(Talksig)
+		# if(desiredAlpha<0):
+		# 	desiredAlpha = desiredAlpha + 2*math.pi
+		# pub.publish("alpha: " + str(alpha))
+		# if alphaError > (math.pi*100):
+		# 	alphaError = (200*math.pi) -  alphaError
+		# elif alphaError < -math.pi:
+		# 	alphaError = 2*math.pi + alphaError
+
+		pub.publish("(" + str(int(Xerr))+","+str(int(Yerr))+","+str(int(alphaError)) + ")")
+		try:
+			#arduino.write(pathstring)
+			pass
+		except SerialException as e:
+			pub.publish("No Serial")
+
+
+	elif message[4:7] == "019":
+		pub.publish("019")
+		info = message.split("(")
+		message = info[1]
+		message = message[:-65].split(",")
+		length = int(message[0])
+		x = []
+		y = []
+		for i in range(length):
+			x.append(int(message[(2*i)+1]))
+			y.append(int(message[(2*i)+2]))
+		PathSent = True
+
+
+rospy.init_node('TransportNode', anonymous=True)
+pub = rospy.Publisher('/PlatformError', String, queue_size=10)
+rospy.Subscriber('/transport', String, callback)
+try:
 	rospy.spin()
 
-if __name__ == '__main__':
-    try:
-		listener()
-		rospy.spin()
-
-    except rospy.ROSInterruptException:
-        pass
+except rospy.ROSInterruptException:
+    pass
 
 #!/usr/bin/env python
 #import rospy
@@ -113,9 +132,9 @@ if __name__ == '__main__':
 
 #def serialprint(data):
 #        global PathSent
-        
+
 #        message = str(data.data)
-        
+
 #        if message[4:7] == "022" and PathSent == True:
 #                info = message.split("(")
 #                message = info[1]
@@ -124,7 +143,7 @@ if __name__ == '__main__':
 #                X  = message[1]
 #                Y  = message[2]
 #                a  = message[3]
-                
+
 #                pos = ['<'+ NID,X,Y,a +'>']
 #                postring = ",".join(pos)
 #                print(postring)
@@ -144,10 +163,10 @@ if __name__ == '__main__':
 #                message = message[:-65].split(",")
 #                x = message[0]
 #                xy = ' '
-                
+
 #                for i in range(1,x):
 #                        xy += message[i]
-#                        
+#
 #                path = ['<'+ NID,Length,xy+'>']
 #                pathstring = ",".join(path)
 #                print(pathring)
@@ -157,7 +176,7 @@ if __name__ == '__main__':
                # 	pub.publish(pathstring)
                # 	r.sleep()
 
-        
+
 #def listener():
 	# In ROS, nodes are uniquely named. If two nodes with the same
 	# name are launched, the previous one is kicked off. The
