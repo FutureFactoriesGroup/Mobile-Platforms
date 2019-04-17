@@ -16,7 +16,7 @@ class RosInOut                  // create ROS Communication class
     char ID;
     int Path[200] = {0};
     int char2int[200] = {0};
-    int Position[200] = {0};
+    int Position[3];
     int numPoints = 0;
     
     int *readID();       
