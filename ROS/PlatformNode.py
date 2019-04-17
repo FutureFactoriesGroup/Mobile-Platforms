@@ -43,6 +43,7 @@ def callback(data):
 		PosX = int(message[1])
 		PosY = int(message[2])
 		alpha = int(message[3])
+		pub.publish("    ")
 		# create complex next position
 		nextPos = x[PtIndex]+y[PtIndex]*1j
 		pub.publish("next pos:" + str(nextPos))
@@ -55,14 +56,24 @@ def callback(data):
 		Xerr,Yerr = currentPosError.real,currentPosError.imag
 
 		# take arg of error vector and subtract alpha
-		desiredAlpha = np.angle(currentPosError)
+		desiredAlpha = np.angle(currentPosError)*100
+		pub.publish("InitialDesiredAlpha: " + str(desiredAlpha))
 		#remap desiredAlpha
 		if(desiredAlpha<0):
-			desiredAlpha =   abs(desiredAlpha) - (math.pi)*100.0
-		alphaError = (desiredAlpha)-alpha + (2*math.pi)*100.0
+			desiredAlpha =   (math.pi)*200.0 - abs(desiredAlpha)
+
+		#desiredAlpha = (math.pi)*200.0  - desiredAlpha
+
+		alphaError = (desiredAlpha)-alpha #+ (2*math.pi)*100.0
+		if(alphaError > (math.pi)*100.0):
+			alphaError = alphaError - (math.pi)*200.0
+		elif(alphaError < -(math.pi)*100.0):
+			alphaError = alphaError + (math.pi)*200.0
 		pub.publish("DesiredAlpha: " + str(desiredAlpha))
 
+		#desiredAlpha = (desiredAlpha + (math.pi)*100.0) % ((math.pi)*200.0)
 
+		#pub.publish("final DesiredAlpha: " + str(desiredAlpha))
 		# if(desiredAlpha<0):
 		# 	desiredAlpha = desiredAlpha + 2*math.pi
 		# pub.publish("alpha: " + str(alpha))
