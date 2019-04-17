@@ -46,7 +46,7 @@ void Motor::RunMotors(int Motor,int DGain,int Direction,int Gain)
   analogWrite(Direction,Gain);       // write gain to motors
 }
 
-void Motor::Forward(int Target,long timeBetFrames,int enc1,int enc2,int enc3,int enc4)
+void Motor::rotateLeft(int Target,long timeBetFrames,int enc1,int enc2,int enc3,int enc4)
 {
   Pid[0].Setpoint = Target;
   Pid[1].Setpoint = Target;
@@ -69,7 +69,7 @@ void Motor::Forward(int Target,long timeBetFrames,int enc1,int enc2,int enc3,int
   RunMotors(M4,0,E4,Pid[3].Output);
 }
 
-void Motor::Backward(int Target,long timeBetFrames,int enc1,int enc2,int enc3,int enc4)
+void Motor::rotateRight(int Target,long timeBetFrames,int enc1,int enc2,int enc3,int enc4)
 {
   Pid[0].Setpoint = Target;
   Pid[1].Setpoint = Target;
@@ -138,7 +138,7 @@ void Motor::Right(int Target,long timeBetFrames,int enc1,int enc2,int enc3,int e
   RunMotors(M4,0,E4,Pid[3].Output);
 }
 
-void Motor::rotateLeft(int Target,long timeBetFrames,int enc1,int enc2,int enc3,int enc4)
+void Motor::Backward(int Target,long timeBetFrames,int enc1,int enc2,int enc3,int enc4)
 {
   Pid[0].Setpoint = Target;
   Pid[1].Setpoint = Target;
@@ -161,7 +161,7 @@ void Motor::rotateLeft(int Target,long timeBetFrames,int enc1,int enc2,int enc3,
   RunMotors(M4,0,E4,Pid[3].Output);
 }
 
-void Motor::rotateRight(int Target,long timeBetFrames,int enc1,int enc2,int enc3,int enc4)
+void Motor::Forward(int Target,long timeBetFrames,int enc1,int enc2,int enc3,int enc4)
 {
   Pid[0].Setpoint = Target;
   Pid[1].Setpoint = Target;

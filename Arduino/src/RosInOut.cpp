@@ -2,7 +2,6 @@
 
 int *RosInOut::readID()
 {
-  Serial.flush();
   if(Serial.available())
   {
      serialInput = Serial.read();
@@ -11,11 +10,11 @@ int *RosInOut::readID()
         
      if (serialInput == ')')
      {
+        //Serial.flush();
+        increment = 0; 
         Position[0] = char2int[0];
         Position[1] = char2int[1];
         Position[2] = char2int[2];
-        //*char2int = 0;
-        increment = 0; 
      }
   }
   return(Position);
