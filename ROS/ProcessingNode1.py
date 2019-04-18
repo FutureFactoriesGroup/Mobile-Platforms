@@ -14,12 +14,11 @@ serialList = []
 PtIndex = 0
 pub = None
 pathlength = 0
-Command = ""
-#Speed = 0
-#PreviousTime = 0
+Speed = 0
+PreviousTime = 0
 #print("this is a test")
-rospy.init_node('TransportNode', anonymous=True)
-pub = rospy.Publisher('/PlatformError', String, queue_size=10)
+rospy.init_node('ProcessingNode', anonymous=True)
+pub = rospy.Publisher('/process', String, queue_size=10)
 time.sleep(2)
 #pub.publish("Starting up")
 #print("starting up")
@@ -43,12 +42,12 @@ arduino = None
 
 for port in serialList:
 	try:
-		returnValue = port.read(15)
+		returnValue = port.read(3)
 		#pub.publish("returnValue is: {}".format(returnValue))
-		if "arm" in returnValue:
+		if returnValue == "arm":
 			Arm = port
 			pub.publish("Arm found")
-		elif "pla" in returnValue:
+		elif returnValue == "pla":
 			arduino = port
 			pub.publish("Platform found")
 	except serial.SerialException:
@@ -64,15 +63,13 @@ def callback(data):
 	global PtIndex
 	global Speed
 	global PreviousTime
-	global pathlength
-	global Command
 	message = str(data.data)
 	#pub.publish(data.data)
 	if message.startswith("31"):
 		if message[4:7] == "022" and PathSent == True:
-			#StartTime = time.time()*1000
-			#TimeStep = StartTime - PreviousTime
-			#PreviousTime = StartTime
+			StartTime = time.time()*1000
+			TimeStep = StartTime - PreviousTime
+			PreviousTime = StartTime
 			#pub.publish("022")
 			info = message.split("(")
 			message = info[1]
@@ -110,75 +107,43 @@ def callback(data):
 
 			DistanceErr = ((Xerr**2)+(Yerr**2))**0.5
 
-			if((DistanceErr > 25)):# and (PtIndex < pathlength-2)):	#in mm
-				if(alphaError > 5 or alphaError < -5): #In centi-rad
-					Rotate = True
-					if (alphaError > 10 and alphaError < 304):
-						#rotate anticlockwise
-						try:
-							NewCommand = "15,1\n"
-							pub.publish("15,1")
-							if (NewCommand != Command):
-								arduino.write(NewCommand) #(Speed CCW,Rotate)
-								Command= NewCommand
-						except:
-							pass
-					elif (alphaError < -10 and alphaError > -304):
-						try:
-							NewCommand = "-15,1\n"
-							pub.publish("-15,1")
-							if (NewCommand != Command):
-								arduino.write(NewCommand) #(Speed CCW,Rotate)
-								Command= NewCommand
-						except:
-							pass
-					else:
-						#Stop rotating
-						Rotate = False
-				else:
+			if(alphaError > 5 or alphaError < -5): #In centi-rad
+				Rotate = True
+				if (alphaError > 10):
+					#rotate anticlockwise
 					try:
-						NewCommand = "15,2\n"
-						pub.publish("15,2")
-						if (NewCommand != Command):
-							arduino.write(NewCommand) #(Speed CCW,Rotate)
-							Command= NewCommand
-							#Speed = 0
-					except:
+						arduino.write("-60,1") #(Speed CCW,Rotate)
+						pub.publish("-60,1")
+					except serial.SerialException:
 						pass
+				elif (alphaError < -10):
+					try:
+						arduino.write("60,1")# (Speed CW,Rotate)
+						pub.publish("60,1")
+					except serial.SerialException:
+						pass
+			else:
+				#Stop rotating
+				Rotate = False
 
-			elif((DistanceErr < 25)):
-				PtIndex += 1
-				if(PtIndex > pathlength-1):
-					# if(alpha > 5 or alpha< -5): #In centi-rad
-					# 	if (alpha > 5):
-					# 		#rotate anticlockwise
-					# 		try:
-					# 			NewCommand = "-15,1\n"
-					# 			pub.publish("-15,1")
-					# 			if (NewCommand != Command):
-					# 				arduino.write(NewCommand) #(Speed CCW,Rotate)
-					# 				Command= NewCommand
-					# 		except:
-					# 			pass
-					# 	elif (alpha < -5):
-					# 		try:
-					# 			NewCommand = "15,1\n"
-					# 			pub.publish("15,1")
-					# 			if (NewCommand != Command):
-					# 				arduino.write(NewCommand) #(Speed CCW,Rotate)
-					# 				Command= NewCommand
-					# 		except:
-					# 			pass
-					# 	else:
-					# 		PathSent = False
-					try:
-						arduino.write("0,0\n") #All stop
-						pub.publish("0,0")
-						Speed = 0
-					except:
-						pass
-				# else:
-				# 	PtIndex += 1
+			if(Rotate == False and (DistanceErr > 5)):	#in mm
+				try:
+					arduino.write("60,2") #Translate
+					pub.publish("60,2")
+					Speed = 0
+				except serial.SerialException:
+					pass
+
+			elif(Rotate == False and (DistanceErr < 5)):
+				#PtIndex++
+				try:
+					arduino.write("0,0") #All stop
+					pub.publish("0,0")
+					Speed = 0
+				except serial.SerialException:
+					pass
+				if(PtIndex > pathlength-1)
+					PathSent = False
 
 			ErrorVector = "(" + str(int(Xerr))+","+str(int(Yerr))+","+str(int(alphaError)) + ")"
 			pub.publish(ErrorVector)
@@ -189,11 +154,12 @@ def callback(data):
 			# 		#pass
 			# 	except serial.SerialException:
 			# 		pass
-			# 	#pub.publish("No Serial")
-			# 	#exit()
+				#pub.publish("No Serial")
+				#exit()
 
 
 		elif message[4:7] == "019":
+			global pathlength
 			pub.publish("019")
 			info = message.split("(")
 			message = info[1]
@@ -205,7 +171,6 @@ def callback(data):
 				x.append(int(message[(2*i)+1]))
 				y.append(int(message[(2*i)+2]))
 			PathSent = True
-			PtIndex = 0
 
 		elif message[4:7] == "041":
 			if Arm != None:
@@ -223,10 +188,10 @@ def callback(data):
 					time.sleep(3)
 					pub.publish("M2231 V"+str(Suction))
 					Arm.write("M2231 V"+str(Suction)+"\n")
-				except:
+				except serial.SerialException:
 					pass
 
-rospy.Subscriber('/transport', String, callback)
+rospy.Subscriber('/process', String, callback)
 try:
 	rospy.spin()
 
