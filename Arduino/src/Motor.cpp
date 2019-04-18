@@ -3,9 +3,9 @@
 #include <PID_v1.h>
 
 pid Pid[4];
-PID PID1(&Pid[0].Input, &Pid[0].Output, &Pid[0].Setpoint,0.875,Pid[0].Ki,Pid[0].Kd, DIRECT);
+PID PID1(&Pid[0].Input, &Pid[0].Output, &Pid[0].Setpoint,8.75,Pid[0].Ki,Pid[0].Kd, DIRECT);
 PID PID2(&Pid[1].Input, &Pid[1].Output, &Pid[1].Setpoint,Pid[1].Kp,Pid[1].Ki,Pid[1].Kd, DIRECT);
-PID PID3(&Pid[2].Input, &Pid[2].Output, &Pid[2].Setpoint,0.875,Pid[2].Ki,Pid[2].Kd, DIRECT);
+PID PID3(&Pid[2].Input, &Pid[2].Output, &Pid[2].Setpoint,8.75,Pid[2].Ki,Pid[2].Kd, DIRECT);
 PID PID4(&Pid[3].Input, &Pid[3].Output, &Pid[3].Setpoint,Pid[3].Kp,Pid[3].Ki,Pid[3].Kd, DIRECT);
 
 void Motor::init_motors()

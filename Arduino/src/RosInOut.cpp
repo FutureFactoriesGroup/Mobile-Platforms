@@ -2,8 +2,9 @@
 
 int *RosInOut::readID()
 {
-  if(Serial.available())
+  while(Serial.available()>0)
   {
+     //delay(20);
      serialInput = Serial.read();
      char2int[increment] = Serial.parseInt();
      increment++;
@@ -15,9 +16,28 @@ int *RosInOut::readID()
         Position[0] = char2int[0];
         Position[1] = char2int[1];
         Position[2] = char2int[2];
+        break;
      }
   }
   return(Position);
+}
+
+int *RosInOut::readVel()
+{
+  if(Serial.available())
+  {
+     serialInput = Serial.read();
+     char2int[increment] = Serial.parseInt();
+     increment++;
+        
+     if (serialInput == ')')
+     {
+        increment = 0; 
+        Vel[0] = char2int[0];
+        Vel[1] = char2int[1];
+     }
+  }
+  return(Vel);
 }
 
 void RosInOut::readPos()
