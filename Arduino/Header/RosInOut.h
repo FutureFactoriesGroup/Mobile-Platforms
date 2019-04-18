@@ -9,18 +9,17 @@
 
 class RosInOut                  // create ROS Communication class
 {
-  public:
+  private:
     char serialInput;
     int increment = 0;
+  public:
     char ID;
     int Path[200];
     int char2int[30];
     int Position[3];
-    int Vel[2];
     int numPoints = 0;
     
-    int *readID(); 
-    int *readVel();       
+    int *readID();       
     void readPos(); //read in serial data and convert it to an integer
     void readTar();
 };
