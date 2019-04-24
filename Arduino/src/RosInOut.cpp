@@ -4,14 +4,12 @@ int *RosInOut::readID()
 {
   while(Serial.available()>0)
   {
-     //delay(20);
      serialInput = Serial.read();
      char2int[increment] = Serial.parseInt();
      increment++;
         
      if (serialInput == ')')
      {
-        //Serial.flush();
         increment = 0; 
         Position[0] = char2int[0];
         Position[1] = char2int[1];
