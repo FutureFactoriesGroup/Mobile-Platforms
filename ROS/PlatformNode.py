@@ -16,6 +16,7 @@ pub = None
 pathlength = 0
 Command = ""
 GoToZero = False
+Target = 0
 #Speed = 0
 #PreviousTime = 0
 #print("this is a test")
@@ -117,7 +118,7 @@ def callback(data):
 			DistanceErr = ((Xerr**2)+(Yerr**2))**0.5
 
 			if(not GoToZero):
-				if((DistanceErr > 25)):# and (PtIndex < pathlength-2)):	#in mm
+				if((DistanceErr > 15)):# and (PtIndex < pathlength-2)):	#in mm
 					#if(alphaError > 5 or alphaError < -5): #In centi-rad
 					if (alphaError > 5 and alphaError < 309):
 						#rotate anticlockwise
@@ -150,15 +151,15 @@ def callback(data):
 						except:
 							pass
 
-				elif((DistanceErr < 25)):
+				elif((DistanceErr < 15)):
 					if(PtIndex == pathlength-1):
 						GoToZero = True
 					else:
 						PtIndex += 1
 
 			else: #Last Point - Go to zero angle
-				if(alpha > 5 or alpha < -5):
-					if (alpha > 5):
+				if(alpha > (Target - 5) or alpha < -Target + 5):
+					if (alpha > -Target + 5):
 						#rotate anticlockwise
 						try:
 							NewCommand = "-15,1\n"
@@ -168,7 +169,7 @@ def callback(data):
 								Command= NewCommand
 						except:
 							pass
-					elif (alpha < -5):
+					elif (alpha < Target -5):
 						try:
 							NewCommand = "15,1\n"
 							pub.publish("15,1")
@@ -177,13 +178,13 @@ def callback(data):
 								Command= NewCommand
 						except:
 							pass
-				elif((DistanceErr < 25)):
-					try:
-						NewCommand = "10,2\n"
-						pub.publish("10,2")
-						if (NewCommand != Command):
-							arduino.write(NewCommand) #(Speed CCW,Rotate)
-							Command= NewCommand
+				# elif((DistanceErr < 10)):
+				# 	try:
+				# 		NewCommand = "10,2\n"
+				# 		pub.publish("10,2")
+				# 		if (NewCommand != Command):
+				# 			arduino.write(NewCommand) #(Speed CCW,Rotate)
+				# 			Command= NewCommand
 							#Speed = 0
 					except:
 						pass
@@ -220,6 +221,7 @@ def callback(data):
 			for i in range(pathlength):
 				x.append(int(message[(2*i)+1]))
 				y.append(int(message[(2*i)+2]))
+			Target = int(message[:-1])
 			PathSent = True
 			GoToZero = False
 			PtIndex = 0
