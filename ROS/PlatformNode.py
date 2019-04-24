@@ -7,6 +7,7 @@ import serial
 from std_msgs.msg import String
 import math
 import numpy as np
+import glob
 
 x = []
 y = []
@@ -25,17 +26,17 @@ pub = rospy.Publisher('/PlatformError', String, queue_size=10)
 time.sleep(2)
 #pub.publish("Starting up")
 #print("starting up")
-try:
-	serialList.append(serial.Serial('/dev/ttyACM0', 115200,timeout = 1))
-	#pub.publish("Flag 1")
-except:
-	pass
 
-try:
-	serialList.append(serial.Serial('/dev/ttyACM1', 115200,timeout = 1))
-	#pub.publish("Flag 2")
-except:
-	pass
+ports = glob.glob('/dev/ttyACM[0-9]*')
+print(ports)
+
+for i in ports:
+	try:
+		serialList.append(serial.Serial(i, 115200,timeout = 1))
+		#pub.publish("Flag 1")
+	except:
+		pass
+
 #Arm = serial.Serial('/dev/ttyACM0',115200,timeout = 1)
 time.sleep(2)
 inputString = ""
